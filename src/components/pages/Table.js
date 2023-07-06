@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { getTableById } from '../../redux/tablesRedux';
 import { useParams } from 'react-router';
 import { Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { getAllStatuses } from '../../redux/statusesRedux';
 
 const Table = ({ action, state }) => {
@@ -16,13 +16,6 @@ const Table = ({ action, state }) => {
     table.maxPeopleAmount || ''
   );
   const [bill, setBill] = useState(table.bill || '');
-
-  useEffect(() => {
-    setStatus(table.status || '');
-    setPeopleAmount(table.peopleAmount || '');
-    setMaxPeopleAmount(table.maxPeopleAmount || '');
-    setBill(table.bill || '');
-  }, [table]);
 
   const handleSubmit = () => {
     action({ status, peopleAmount, maxPeopleAmount, bill });
