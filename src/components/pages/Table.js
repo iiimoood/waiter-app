@@ -1,33 +1,66 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { getTableById } from '../../redux/tablesRedux';
 import { useParams } from 'react-router';
-import { Navigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getAllStatuses } from '../../redux/statusesRedux';
+import { updateTable } from '../../redux/tablesRedux';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 
-const Table = ({ action, state }) => {
+const Table = () => {
+  const {
+    register,
+    handleSubmit: validate,
+    formState: { errors },
+  } = useForm();
+
   const { tableId } = useParams();
   const table = useSelector((state) => getTableById(state, tableId));
   const statuses = useSelector(getAllStatuses);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [status, setStatus] = useState(table.status || '');
-  const [peopleAmount, setPeopleAmount] = useState(table.peopleAmount || '');
+  const [status, setStatus] = useState(table?.status || '');
+  const [peopleAmount, setPeopleAmount] = useState(table?.peopleAmount || '');
   const [maxPeopleAmount, setMaxPeopleAmount] = useState(
-    table.maxPeopleAmount || ''
+    table?.maxPeopleAmount || ''
   );
-  const [bill, setBill] = useState(table.bill || '');
+  const [bill, setBill] = useState(table?.bill || '');
+
+  useEffect(() => {
+    if (table) {
+      setStatus(table.status);
+      setPeopleAmount(table.peopleAmount);
+      setMaxPeopleAmount(table.maxPeopleAmount);
+      setBill(table.bill);
+    }
+  }, [table]);
 
   const handleSubmit = () => {
-    action({ status, peopleAmount, maxPeopleAmount, bill });
+    dispatch(
+      updateTable({ status, peopleAmount, maxPeopleAmount, bill, tableId })
+    );
+    navigate('/');
   };
 
-  if (!table) return <Navigate to="/" />;
+  const handleStatusChange = (e) => {
+    const selectedStatus = e.target.value;
+    setStatus(selectedStatus);
+    if (selectedStatus !== 'Busy') {
+      setBill('0');
+    }
+    if (selectedStatus === 'Cleaning' || selectedStatus === 'Free') {
+      setPeopleAmount('0');
+    }
+  };
+
+  if (!table) return <h1>Loading</h1>;
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={validate(handleSubmit)}>
       <h3>Table {table.id}</h3>
       <div className="form-group mb-2">
         <label>Status: </label>
-        <select onChange={(e) => setStatus(e.target.value)} value={status}>
+        <select onChange={handleStatusChange} value={status}>
           {statuses.map((status) => (
             <option key={status.name}>{status.name}</option>
           ))}
@@ -36,32 +69,61 @@ const Table = ({ action, state }) => {
       <div className="form-group mb-2">
         <label>People: </label>
         <input
+          {...register('peopleAmount', {
+            required: true,
+            min: 0,
+            max: 10,
+          })}
           type="text"
           className="form-control w-25"
           id="peopleAmount"
+          onBlur={(e) => {
+            let enteredValue = parseInt(e.target.value, 10);
+            if (enteredValue > parseInt(maxPeopleAmount, 10)) {
+              enteredValue = parseInt(maxPeopleAmount, 10);
+            }
+            setPeopleAmount(enteredValue);
+          }}
           onChange={(e) => setPeopleAmount(e.target.value)}
           value={peopleAmount}
         />
+        {errors.peopleAmount && (
+          <small className="d-block form-text text-danger mt-2">
+            Incorrect value (Min is 0/Max is 10)
+          </small>
+        )}
         /
         <input
+          {...register('maxPeopleAmount', {
+            required: true,
+            min: 0,
+            max: 10,
+          })}
           type="text"
           className="form-control w-25"
           id="maxPeopleAmount"
           onChange={(e) => setMaxPeopleAmount(e.target.value)}
           value={maxPeopleAmount}
         />
+        {errors.maxPeopleAmount && (
+          <small className="d-block form-text text-danger mt-2">
+            Incorrect value (Min is 0/Max is 10)
+          </small>
+        )}
       </div>
-      <div className="form-group mb-2">
-        <label>Bill: </label>
-        $
-        <input
-          type="text"
-          className="form-control w-25"
-          id="bill"
-          onChange={(e) => setBill(e.target.value)}
-          value={bill}
-        />
-      </div>
+      {status === 'Busy' && (
+        <div className="form-group mb-2">
+          <label>Bill: </label>
+          $
+          <input
+            type="text"
+            className="form-control w-25"
+            id="bill"
+            onChange={(e) => setBill(e.target.value)}
+            value={bill}
+          />
+        </div>
+      )}
       <button type="submit" className="btn btn-primary">
         Update
       </button>
