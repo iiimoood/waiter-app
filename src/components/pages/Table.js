@@ -3,9 +3,10 @@ import { getTableById } from '../../redux/tablesRedux';
 import { useParams } from 'react-router';
 import { useState, useEffect } from 'react';
 import { getAllStatuses } from '../../redux/statusesRedux';
-import { updateTable } from '../../redux/tablesRedux';
-import { useNavigate } from 'react-router-dom';
+import { updateTableRequest } from '../../redux/tablesRedux';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import '../../styles/global.scss';
 
 const Table = () => {
   const {
@@ -38,7 +39,13 @@ const Table = () => {
 
   const handleSubmit = () => {
     dispatch(
-      updateTable({ status, peopleAmount, maxPeopleAmount, bill, tableId })
+      updateTableRequest({
+        status,
+        peopleAmount,
+        maxPeopleAmount,
+        bill,
+        tableId,
+      })
     );
     navigate('/');
   };
@@ -54,7 +61,9 @@ const Table = () => {
     }
   };
 
-  if (!table) return <h1>Loading</h1>;
+  
+
+  if (!table) return <Navigate to="/" />;
   return (
     <form onSubmit={validate(handleSubmit)}>
       <h3>Table {table.id}</h3>
@@ -74,8 +83,8 @@ const Table = () => {
             min: 0,
             max: 10,
           })}
-          type="text"
-          className="form-control w-25"
+          type="number"
+          className="form-control w-25 "
           id="peopleAmount"
           onBlur={(e) => {
             let enteredValue = parseInt(e.target.value, 10);
@@ -99,8 +108,8 @@ const Table = () => {
             min: 0,
             max: 10,
           })}
-          type="text"
-          className="form-control w-25"
+          type="number"
+          className="form-control w-25 "
           id="maxPeopleAmount"
           onChange={(e) => setMaxPeopleAmount(e.target.value)}
           value={maxPeopleAmount}
@@ -116,8 +125,8 @@ const Table = () => {
           <label>Bill: </label>
           $
           <input
-            type="text"
-            className="form-control w-25"
+            type="number"
+            className="form-control w-25 "
             id="bill"
             onChange={(e) => setBill(e.target.value)}
             value={bill}

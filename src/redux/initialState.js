@@ -6,6 +6,7 @@ const initialState = {
     { id: '3', name: 'Free' },
     { id: '4', name: 'Reserved' },
   ],
+  loading: false,
 };
 
 export default initialState;

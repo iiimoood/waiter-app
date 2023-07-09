@@ -4,15 +4,24 @@ import Table from './components/pages/Table';
 import NotFound from './components/pages/NotFound';
 import Header from './components/views/Header';
 import Footer from './components/views/Footer';
-import { Container } from 'react-bootstrap';
+import { Container, Spinner } from 'react-bootstrap';
 import { fetchTables } from './redux/tablesRedux';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 
 const App = () => {
   const dispatch = useDispatch();
+  const loading = useSelector((state) => state.loading);
 
   useEffect(() => dispatch(fetchTables()), [dispatch]);
+
+  if (loading) {
+    return (
+      <Container>
+        <Spinner animation="border" />
+      </Container>
+    );
+  }
 
   return (
     <Container>
