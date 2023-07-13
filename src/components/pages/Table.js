@@ -61,22 +61,25 @@ const Table = () => {
     }
   };
 
-  
-
   if (!table) return <Navigate to="/" />;
   return (
     <form onSubmit={validate(handleSubmit)}>
-      <h3>Table {table.id}</h3>
-      <div className="form-group mb-2">
-        <label>Status: </label>
-        <select onChange={handleStatusChange} value={status}>
+      <h3 className="mb-4">Table {table.id}</h3>
+      <div className="form-group mb-3">
+        <label className="fw-bold me-4">Status: </label>
+        <select
+          onChange={handleStatusChange}
+          value={status}
+          className="w-25 rounded"
+          style={{ height: '35px' }}
+        >
           {statuses.map((status) => (
             <option key={status.name}>{status.name}</option>
           ))}
         </select>
       </div>
-      <div className="form-group mb-2">
-        <label>People: </label>
+      <div className="form-group d-flex flex-row align-items-center mb-3">
+        <label className="fw-bold me-4">People: </label>
         <input
           {...register('peopleAmount', {
             required: true,
@@ -84,7 +87,8 @@ const Table = () => {
             max: 10,
           })}
           type="number"
-          className="form-control w-25 "
+          className="form-control text-center me-2 "
+          style={{ width: '45px' }}
           id="peopleAmount"
           onBlur={(e) => {
             let enteredValue = parseInt(e.target.value, 10);
@@ -109,7 +113,8 @@ const Table = () => {
             max: 10,
           })}
           type="number"
-          className="form-control w-25 "
+          className="form-control text-center ms-2 "
+          style={{ width: '45px' }}
           id="maxPeopleAmount"
           onChange={(e) => setMaxPeopleAmount(e.target.value)}
           value={maxPeopleAmount}
@@ -121,12 +126,13 @@ const Table = () => {
         )}
       </div>
       {status === 'Busy' && (
-        <div className="form-group mb-2">
-          <label>Bill: </label>
+        <div className="form-group mb-2 d-flex flex-row align-items-center mb-3">
+          <label className="fw-bold me-5">Bill: </label>
           $
           <input
             type="number"
-            className="form-control w-25 "
+            className="form-control text-center ms-2 "
+            style={{ width: '45px' }}
             id="bill"
             onChange={(e) => setBill(e.target.value)}
             value={bill}

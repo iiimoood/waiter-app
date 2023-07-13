@@ -13,9 +13,9 @@ const NavbarComponent = () => {
       <span className="text-light align-items-center col-10 ms-2">
         Waiter.app
       </span>
-      <Nav className="me-2 col-2">
+      <Nav className="me-3 col-2">
         <Nav.Link
-          className="w-100 d-flex justify-content-end me-3"
+          className="w-100 d-flex justify-content-center justify-content-lg-end me-3"
           as={NavLink}
           to="/"
         >

@@ -1,12 +1,15 @@
+import { API_URL } from '../config';
+
 const initialState = {
-  tables: [],
+  data: [],
   loading: false,
 };
 
 //selectors
-export const getAllTables = ({ tables }) => tables;
+export const getAllTables = ({ tables }) => tables.data;
 export const getTableById = ({ tables }, tableId) =>
-  tables.find((table) => table.id === tableId);
+  tables.data.find((table) => table.id === tableId);
+export const getTablesLoading = ({ tables }) => tables.loading;
 
 // actions
 const createActionName = (actionName) => `app/tables/${actionName}`;
@@ -24,7 +27,7 @@ export const fetchTablesRequest = () => ({
 export const fetchTables = () => {
   return (dispatch) => {
     dispatch(fetchTablesRequest());
-    fetch('http://localhost:3131/api/tables')
+    fetch(`${API_URL}/tables`)
       .then((res) => res.json())
       .then((tables) => dispatch(updateTables(tables)));
   };
@@ -44,7 +47,7 @@ export const updateTableRequest = ({
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        tableId,
+        id: tableId,
         status,
         peopleAmount,
         maxPeopleAmount,
@@ -52,12 +55,12 @@ export const updateTableRequest = ({
       }),
     };
 
-    fetch('http://localhost:3131/tables/' + tableId, options)
+    fetch(`${API_URL}/tables` + tableId, options)
       .then((res) => res.json())
       .then(() =>
         dispatch(
           updateTable({
-            tableId,
+            id: tableId,
             status,
             peopleAmount,
             maxPeopleAmount,
@@ -78,13 +81,13 @@ const tablesReducer = (statePart = initialState, action) => {
     case UPDATE_TABLES:
       return {
         ...statePart,
-        tables: [...action.payload],
+        data: [...action.payload],
         loading: false,
       };
     case UPDATE_TABLE:
       return {
         ...statePart,
-        tables: statePart.tables.map((table) =>
+        data: statePart.data.map((table) =>
           table.id === action.payload.id
             ? { ...table, ...action.payload }
             : table

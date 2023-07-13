@@ -5,20 +5,25 @@ import NotFound from './components/pages/NotFound';
 import Header from './components/views/Header';
 import Footer from './components/views/Footer';
 import { Container, Spinner } from 'react-bootstrap';
-import { fetchTables } from './redux/tablesRedux';
+import { fetchTables, getTablesLoading } from './redux/tablesRedux';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 
 const App = () => {
   const dispatch = useDispatch();
-  const loading = useSelector((state) => state.loading);
+  const loading = useSelector(getTablesLoading);
 
   useEffect(() => dispatch(fetchTables()), [dispatch]);
 
   if (loading) {
     return (
-      <Container>
-        <Spinner animation="border" />
+      <Container className="d-flex justify-content-center">
+        <div
+          className="d-flex align-items-center"
+          style={{ marginTop: '250px' }}
+        >
+          <Spinner animation="border" />
+        </div>
       </Container>
     );
   }
